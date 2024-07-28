@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo and Signature Reducer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">Logo Name</div>
+        <button class="navbar-toggler" type="button" aria-controls="navbarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+            &#9776;
+        </button>
+        <div class="links" id="navbarMenu">
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Photo and Signature Reducer</h2>
+        <p class="description">Upload your photo or signature and reduce its size while maintaining quality. Perfect for
+            web uploads and saving storage space.</p>
+        <div class="drag-drop-area" id="drag-drop-area">Drag & Drop or Click to Upload Photo or Signature</div>
+        <input type="file" id="file-input" accept="image/*" class="hidden-input">
+        <div id="image-preview"></div>
+        <div class="reduce-options" id="reduce-options">
+            <h3>Reduce Image</h3>
+            <p class="description">Adjust the dimensions and quality to your needs.</p>
+            <div class="manual-reduce-options" id="manual-reduce">
+                <label for="jee-main-options">Predefined Options:</label>
+                <select id="jee-main-options" onchange="applyPredefinedOptions()">
+                    <option value="">Select an option</option>
+                    <option value="jee-main-photo-1">Photo - JEE Main Option 1 (3.5 cm x 4.5 cm, 20 KB)</option>
+                    <option value="jee-main-photo-2">Photo - JEE Main Option 2 (4.5 cm x 3.5 cm, 20 KB)</option>
+                    <option value="jee-main-signature-1">Signature - JEE Main Option 1 (3.5 cm x 1.5 cm, 10 KB)</option>
+                    <option value="jee-main-signature-2">Signature - JEE Main Option 2 (1.5 cm x 3.5 cm, 10 KB)</option>
+                </select>
+                <div>
+                    <label for="unit-selection">Unit:</label>
+                    <select id="unit-selection">
+                        <option value="cm">cm</option>
+                        <option value="inch">inch</option>
+                        <option value="px">px</option>
+                    </select>
+                </div>
+                <input type="number" id="manual-width" placeholder="Width (cm)" min="0.1" step="0.1">
+                <input type="number" id="manual-height" placeholder="Height (cm)" min="0.1" step="0.1">
+                <div class="quality-slider">
+                    <label for="manual-quality">Quality:</label>
+                    <input type="range" id="manual-quality" min="0" max="100" value="80">
+                    <span id="quality-value">80</span>
+                </div>
+                <button onclick="reduceImage()">Reduce Image</button>
+                <p id="size-display">Size: N/A</p>
+                <button id="rotate-left" onclick="rotateImage(-90)">Rotate Left</button>
+                <button id="rotate-right" onclick="rotateImage(90)">Rotate Right</button>
+            </div>
+            <div id="download-btn-container">
+                <button onclick="downloadImage('jpeg')">Download as JPEG</button>
+                <button onclick="downloadImage('pdf')">Download as PDF</button>
+            </div>
+
+        </div>
+        <!-- exam button automatic -->
+        <div class="btn">
+            <a href="jee-mains.html" class="card">
+                <div class="header">
+                    <span class="flag">🇮🇳</span>
+                    <span class="title">JEE MAINS</span>
+                </div>
+                <div class="sub-title">Public Service Commission</div>
+                <div class="description">
+                    Resize Your Photo And Signature for PSC Application Forms. Convert Photo And Signature Size for all
+                    PSC Forms.
+                </div>
+                <div class="button">Photo ➔</div>
+                <div class="button">Signature ➔</div>
+            </a>
+            <a href="ssc.html" class="card">
+                <div class="header">
+                    <span class="flag">🇮🇳</span>
+                    <span class="title">SSC</span>
+                </div>
+                <div class="sub-title">Staff Selection Commission</div>
+                <div class="description">
+                    Resize Your Photo And Signature for SSC Application Forms. Convert Photo And Signature Size for all
+                    SSC Forms.
+                </div>
+                <div class="button">Photo ➔</div>
+                <div class="button">Signature ➔</div>
+            </a>
+            <a href="neet.html" class="card">
+                <div class="header">
+                    <span class="flag">🇮🇳</span>
+                    <span class="title">NEET</span>
+                </div>
+                <div class="sub-title">Staff Selection Commission</div>
+                <div class="description">
+                    Resize Your Photo And Signature for SSC Application Forms. Convert Photo And Signature Size for all
+                    SSC Forms.
+                </div>
+                <div class="button">Photo ➔</div>
+                <div class="button">Signature ➔</div>
+            </a>
+            <a href="upsc.html" class="card">
+                <div class="header">
+                    <span class="flag">🇮🇳</span>
+                    <span class="title">UPSC</span>
+                </div>
+                <div class="sub-title">Staff Selection Commission</div>
+                <div class="description">
+                    Resize Your Photo And Signature for SSC Application Forms. Convert Photo And Signature Size for all
+                    SSC Forms.
+                </div>
+                <div class="button">Photo ➔</div>
+                <div class="button">Signature ➔</div>
+            </a>
+            <a href="nda.html" class="card">
+                <div class="header">
+                    <span class="flag">🇮🇳</span>
+                    <span class="title">NDA</span>
+                </div>
+                <div class="sub-title">Staff Selection Commission</div>
+                <div class="description">
+                    Resize Your Photo And Signature for SSC Application Forms. Convert Photo And Signature Size for all
+                    SSC Forms.
+                </div>
+                <div class="button">Photo ➔</div>
+                <div class="button">Signature ➔</div>
+            </a>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="script.js">
+    </script>
+</body>
+
+</html>

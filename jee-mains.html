@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Reduce Photo & Signature</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .upload-area {
+            border: 2px dashed #6c757d;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 20px;
+            background-color: #e9ecef;
+        }
+
+        .upload-area img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .reduce-options {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            text-align: center;
+        }
+
+        .manual-reduce-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .manual-reduce-options input,
+        .manual-reduce-options button {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 400px;
+            transition: border-color 0.3s ease;
+        }
+
+        .manual-reduce-options input:focus {
+            border-color: #343a40;
+        }
+
+        .manual-reduce-options button {
+            background-color: #343a40;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .manual-reduce-options button:hover {
+            background-color: #495057;
+        }
+
+        .quality-slider {
+            width: 80%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .quality-slider label {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .quality-slider input[type="range"] {
+            flex: 3;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .quality-slider span {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #photo-download-btn,
+        #signature-download-btn {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #photo-download-btn:hover,
+        #signature-download-btn:hover {
+            background-color: #218838;
+        }
+
+        /* New Styles */
+        #photo-preview img {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        #signature-preview img {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <h2>Upload and Reduce Photo & Signature</h2>
+            <p>Upload your photo and signature and the system will apply the specified settings.</p>
+
+            <!-- Photo Upload and Reduce Section -->
+            <div class="upload-area" id="photo-upload-area">Click or Drag & Drop to Upload Photo</div>
+            <input type="file" id="photo-input" accept="image/*" class="hidden-input">
+            <div id="photo-preview"></div>
+
+            <div class="reduce-options" id="photo-reduce-options">
+                <h3>Reduce Photo</h3>
+                <div class="manual-reduce-options" id="photo-manual-reduce">
+                    <input type="hidden" id="photo-width" value="3.5">
+                    <input type="hidden" id="photo-height" value="4.5">
+                    <input type="hidden" id="photo-quality" value="80">
+                    <button onclick="reducePhoto()">Reduce Photo</button>
+                    <p id="photo-size-display">Size: N/A</p>
+                </div>
+                <button id="photo-download-btn" onclick="downloadPhoto()">Download Reduced Photo</button>
+            </div>
+
+        </div>
+        <!-- Signature Upload and Reduce Section -->
+        <div>
+            <h2>Upload and Reduce Photo & Signature</h2>
+            <p>Upload your photo and signature and the system will apply the specified settings.</p>
+            <div class="upload-area" id="signature-upload-area">Click or Drag & Drop to Upload Signature</div>
+            <input type="file" id="signature-input" accept="image/*" class="hidden-input">
+            <div id="signature-preview"></div>
+
+            <div class="reduce-options" id="signature-reduce-options">
+                <h3>Reduce Signature</h3>
+                <div class="manual-reduce-options" id="signature-manual-reduce">
+                    <input type="hidden" id="signature-width" value="3.5">
+                    <input type="hidden" id="signature-height" value="1.5">
+                    <input type="hidden" id="signature-quality" value="80">
+                    <button onclick="reduceSignature()">Reduce Signature</button>
+                    <p id="signature-size-display">Size: N/A</p>
+                </div>
+                <button id="signature-download-btn" onclick="downloadSignature()">Download Reduced Signature</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const photoUploadArea = document.getElementById('photo-upload-area');
+            const signatureUploadArea = document.getElementById('signature-upload-area');
+            const photoInput = document.getElementById('photo-input');
+            const signatureInput = document.getElementById('signature-input');
+            const photoPreview = document.getElementById('photo-preview');
+            const signaturePreview = document.getElementById('signature-preview');
+            const photoReduceOptions = document.getElementById('photo-reduce-options');
+            const signatureReduceOptions = document.getElementById('signature-reduce-options');
+            const photoDownloadBtn = document.getElementById('photo-download-btn');
+            const signatureDownloadBtn = document.getElementById('signature-download-btn');
+            let originalPhoto = null;
+            let originalSignature = null;
+            let originalPhotoDataURL = null;
+            let originalSignatureDataURL = null;
+
+            photoUploadArea.addEventListener('click', () => {
+                photoInput.click();
+            });
+
+            signatureUploadArea.addEventListener('click', () => {
+                signatureInput.click();
+            });
+
+            photoUploadArea.addEventListener('dragover', (event) => {
+                event.preventDefault();
+            });
+
+            photoUploadArea.addEventListener('drop', (event) => {
+                event.preventDefault();
+                const file = event.dataTransfer.files[0];
+                handlePhotoFile(file);
+            });
+
+            signatureUploadArea.addEventListener('dragover', (event) => {
+                event.preventDefault();
+            });
+
+            signatureUploadArea.addEventListener('drop', (event) => {
+                event.preventDefault();
+                const file = event.dataTransfer.files[0];
+                handleSignatureFile(file);
+            });
+
+            photoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                handlePhotoFile(file);
+            });
+
+            signatureInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                handleSignatureFile(file);
+            });
+
+            function handlePhotoFile(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = function () {
+                            originalPhoto = img;
+                            originalPhotoDataURL = event.target.result;
+                            photoPreview.innerHTML = '';
+                            photoPreview.appendChild(img);
+                            photoReduceOptions.style.display = 'block';
+                            photoDownloadBtn.style.display = 'none'; // Hide download button initially
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function handleSignatureFile(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = function () {
+                            originalSignature = img;
+                            originalSignatureDataURL = event.target.result;
+                            signaturePreview.innerHTML = '';
+                            signaturePreview.appendChild(img);
+                            signatureReduceOptions.style.display = 'block';
+                            signatureDownloadBtn.style.display = 'none'; // Hide download button initially
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            function reducePhoto() {
+                const widthInput = document.getElementById('photo-width').value * 37.7953; // cm to pixels
+                const heightInput = document.getElementById('photo-height').value * 37.7953; // cm to pixels
+                const qualityInput = document.getElementById('photo-quality').value / 100;
+
+                if (originalPhotoDataURL && widthInput && heightInput && qualityInput) {
+                    const img = new Image();
+                    img.src = originalPhotoDataURL;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = widthInput;
+                        canvas.height = heightInput;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, widthInput, heightInput);
+
+                        const reducedDataURL = canvas.toDataURL('image/jpeg', qualityInput);
+                        const reducedImage = new Image();
+                        reducedImage.src = reducedDataURL;
+                        photoPreview.innerHTML = '';
+                        photoPreview.appendChild(reducedImage);
+
+                        reducedImage.onload = function () {
+                            const sizeDisplay = document.getElementById('photo-size-display');
+                            sizeDisplay.innerText = `Size: ${Math.round(reducedDataURL.length / 1024)} KB`;
+                            photoDownloadBtn.style.display = 'block'; // Show download button after image reduction
+                        };
+                    };
+                }
+            }
+
+            function reduceSignature() {
+                const widthInput = document.getElementById('signature-width').value * 37.7953; // cm to pixels
+                const heightInput = document.getElementById('signature-height').value * 37.7953; // cm to pixels
+                const qualityInput = document.getElementById('signature-quality').value / 100;
+
+                if (originalSignatureDataURL && widthInput && heightInput && qualityInput) {
+                    const img = new Image();
+                    img.src = originalSignatureDataURL;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = widthInput;
+                        canvas.height = heightInput;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, widthInput, heightInput);
+
+                        const reducedDataURL = canvas.toDataURL('image/jpeg', qualityInput);
+                        const reducedImage = new Image();
+                        reducedImage.src = reducedDataURL;
+                        signaturePreview.innerHTML = '';
+                        signaturePreview.appendChild(reducedImage);
+
+                        reducedImage.onload = function () {
+                            const sizeDisplay = document.getElementById('signature-size-display');
+                            sizeDisplay.innerText = `Size: ${Math.round(reducedDataURL.length / 1024)} KB`;
+                            signatureDownloadBtn.style.display = 'block'; // Show download button after image reduction
+                        };
+                    };
+                }
+            }
+
+            function downloadPhoto() {
+                if (originalPhotoDataURL) {
+                    const link = document.createElement('a');
+                    link.href = originalPhotoDataURL;
+                    link.download = 'reduced-photo.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+
+            function downloadSignature() {
+                if (originalSignatureDataURL) {
+                    const link = document.createElement('a');
+                    link.href = originalSignatureDataURL;
+                    link.download = 'reduced-signature.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+
+            window.reducePhoto = reducePhoto;
+            window.reduceSignature = reduceSignature;
+            window.downloadPhoto = downloadPhoto;
+            window.downloadSignature = downloadSignature;
+        });
+    </script>
+</body>
+
+</html>
